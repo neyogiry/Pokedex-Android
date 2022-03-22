@@ -12,9 +12,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -23,8 +21,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import coil.compose.AsyncImage
 import com.neyogiry.android.sample.pokedex.domain.Pokemon
+import com.neyogiry.android.sample.pokedex.util.Image
 
 @ExperimentalFoundationApi
 @Composable
@@ -75,17 +73,18 @@ fun PokemonList(
 @Composable
 fun PokemonItem(pokemon: Pokemon) {
     val shape = RoundedCornerShape(10.dp)
+    var backgroundColor by remember { mutableStateOf(Color.White) }
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(4.dp)
             .border(width = 1.dp, color = Color.Gray, shape = shape)
-            .background(color = Color.White, shape = shape)
+            .background(color = backgroundColor, shape = shape)
             .padding(16.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        AsyncImage(model = pokemon.imageUrl, contentDescription = null)
+        Image(url = pokemon.imageUrl, averageColor = { backgroundColor = it })
         Text(
             text = pokemon.name,
             textAlign = TextAlign.Center,
