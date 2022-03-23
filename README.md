@@ -1,11 +1,17 @@
-<h1 align="center">
-  <img alt="Pokedex" src="https://ik.imagekit.io/hwyksvj4iv/pokedex_N_WgWrJK0s.png" width="250px" />
-</h1>
+<h1 align="center">Pokedex Samples</h1>
 
-Pokedex is a simple android application that allows the user to see the list of pokemon, as well as the details of each one of them.
+<p align="center">
+  <a href="https://opensource.org/licenses/Apache-2.0"><img alt="License" src="https://img.shields.io/badge/License-Apache%202.0-blue.svg"/></a>
+</p>
 
-## Tech stack
-- [Jetpack Compose](https://developer.android.com/jetpack/compose). Jetpack Compose is Android’s modern toolkit for building native UI.
+<p align="center">
+  This repository contains a set of individual Android Studio projects to help you learn about native Android development. 
+Each sample demonstrates different use cases, complexity levels and APIs.
+
+## Branches
+Different ways of developing the same application. You can look at the different branches.
+
+- [Jetpack Compose](https://github.com/neyogiry/Pokedex-Android/tree/jetpack-compose). It's Android's modern toolkit for building native UI.
 
 ### Status: 🚧 In progress
 Pokedex is still in under development, and some features are not yet implemented.
