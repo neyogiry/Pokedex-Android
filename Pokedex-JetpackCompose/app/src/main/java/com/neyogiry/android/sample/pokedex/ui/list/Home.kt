@@ -62,7 +62,7 @@ fun PokemonList(
 ) {
     LazyVerticalGrid(
         cells = GridCells.Fixed(2),
-        modifier = Modifier.padding(10.dp),
+        contentPadding = PaddingValues(all = 10.dp)
     ) {
         items(list) { item ->
             PokemonItem(pokemon = item)
