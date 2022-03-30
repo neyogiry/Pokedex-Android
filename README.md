@@ -1,4 +1,4 @@
-<h1 align="center">Pokedex Samples</h1>
+<h1 align="center">Pokedex</h1>
 
 <p align="center">
   <a href="https://opensource.org/licenses/Apache-2.0"><img alt="License" src="https://img.shields.io/badge/License-Apache%202.0-blue.svg"/></a>
@@ -8,10 +8,10 @@
   This repository contains a set of individual Android Studio projects to help you learn about native Android development. 
 Each sample demonstrates different use cases, complexity levels and APIs.
 
-## Branches
-Different ways of developing the same application. You can look at the different branches.
+## Samples
+Different ways of developing the same application. You can look at the different samples.
 
-- [Jetpack Compose](https://github.com/neyogiry/Pokedex-Android/tree/jetpack-compose). It's Android's modern toolkit for building native UI.
+- [Jetpack Compose](https://github.com/neyogiry/Pokedex-Android/tree/main/Pokedex-JetpackCompose). It's Android's modern toolkit for building native UI.
 
 ### Status: 🚧 In progress
 Pokedex is still in under development, and some features are not yet implemented.
