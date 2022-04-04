@@ -1,10 +1,7 @@
 package com.neyogiry.android.sample.pokedex.ui.list
 
 import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
@@ -21,7 +18,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.neyogiry.android.sample.pokedex.domain.Pokemon
+import com.neyogiry.android.sample.pokedex.ui.theme.Pokedex
 import com.neyogiry.android.sample.pokedex.util.Image
 
 @ExperimentalFoundationApi
@@ -50,8 +49,20 @@ fun HomeContent(
 
 @Composable
 fun PokedexAppBar() {
-    TopAppBar() {
-        Text(text = "Pokedex")
+    val systemUiController = rememberSystemUiController()
+    systemUiController.setStatusBarColor(Pokedex)
+    TopAppBar(
+        backgroundColor = Pokedex,
+
+    ) {
+        Text(
+            text = "Pokedex",
+            color = Color.White,
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight(),
+            textAlign = TextAlign.Center
+        )
     }
 }
 
@@ -87,7 +98,6 @@ fun PokemonItem(pokemon: Pokemon) {
         Image(url = pokemon.imageUrl, averageColor = { backgroundColor = it })
         Text(
             text = pokemon.name,
-            textAlign = TextAlign.Center,
             fontSize = 16.sp,
         )
     }
