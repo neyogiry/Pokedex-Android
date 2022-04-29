@@ -18,18 +18,24 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.neyogiry.android.sample.pokedex.domain.Pokemon
+import com.neyogiry.android.sample.pokedex.ui.PokedexDestinations
 import com.neyogiry.android.sample.pokedex.ui.theme.Pokedex
 import com.neyogiry.android.sample.pokedex.util.Image
+import java.net.URLEncoder
 
 @ExperimentalFoundationApi
 @Composable
 fun Home(
+    navController: NavController,
     viewModel: HomeViewModel = viewModel()
 ) {
     val viewState by viewModel.state.collectAsState()
     HomeContent(
+        navController = navController,
         PokemonList = viewState.pokemonList
     )
 
@@ -38,12 +44,13 @@ fun Home(
 @ExperimentalFoundationApi
 @Composable
 fun HomeContent(
+    navController: NavController,
     PokemonList: List<Pokemon>,
 ) {
     Scaffold(
         topBar = { PokedexAppBar() },
     ) {
-        PokemonList(PokemonList)
+        PokemonList(navController, PokemonList)
     }
 }
 
@@ -69,6 +76,7 @@ fun PokedexAppBar() {
 @ExperimentalFoundationApi
 @Composable
 fun PokemonList(
+    navController: NavController,
     list: List<Pokemon>
 ) {
     LazyVerticalGrid(
@@ -76,17 +84,24 @@ fun PokemonList(
         contentPadding = PaddingValues(all = 10.dp)
     ) {
         items(list) { item ->
-            PokemonItem(pokemon = item)
+            PokemonItem(navController = navController, pokemon = item)
         }
     }
 }
 
 @Composable
-fun PokemonItem(pokemon: Pokemon) {
+fun PokemonItem(
+    navController: NavController,
+    pokemon: Pokemon
+) {
     val shape = RoundedCornerShape(10.dp)
     var backgroundColor by remember { mutableStateOf(Color.White) }
     Column(
         modifier = Modifier
+            .clickable {
+                val encodedUrl = URLEncoder.encode(pokemon.url, "UTF-8")
+                navController.navigate(PokedexDestinations.DETAILS_ROUTE + encodedUrl)
+            }
             .fillMaxSize()
             .padding(4.dp)
             .border(width = 1.dp, color = Color.Gray, shape = shape)
@@ -109,6 +124,7 @@ fun PokemonItem(pokemon: Pokemon) {
 @Composable
 fun PokedexPreview() {
     HomeContent(
+        rememberNavController(),
         listOf(
             Pokemon("Bulbasaur", ""),
             Pokemon("Ivysaur", ""),
