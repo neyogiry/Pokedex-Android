@@ -2,6 +2,7 @@ package com.neyogiry.android.sample.pokedex.data
 
 import com.neyogiry.android.sample.pokedex.domain.DataSource
 import com.neyogiry.android.sample.pokedex.domain.Pokemon
+import com.neyogiry.android.sample.pokedex.domain.PokemonDetail
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
@@ -26,5 +27,22 @@ class RemoteDataSource(
             }
 
         }
+
+    override fun fetchPokemonDetailByUrl(url: String): Flow<PokemonDetail> {
+        return flow {
+            val response = apiService.pokemonDetailByUrl(url)
+            if (response.isSuccessful) {
+                val pokemonResponse = response.body()
+                pokemonResponse?.let { pokemon ->
+                    emit(
+                        PokemonDetail(name = pokemon.name ?: "", height = pokemon.height ?: 0, weight = pokemon.weight ?: 0)
+                    )
+                }
+                //TODO: Manage error responses
+            } else {
+                //TODO: Manage error responses
+            }
+        }
+    }
 
 }
