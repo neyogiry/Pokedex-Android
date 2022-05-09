@@ -25,6 +25,7 @@ import com.neyogiry.android.sample.pokedex.domain.Pokemon
 import com.neyogiry.android.sample.pokedex.ui.PokedexDestinations
 import com.neyogiry.android.sample.pokedex.ui.theme.Pokedex
 import com.neyogiry.android.sample.pokedex.util.Image
+import com.neyogiry.android.sample.pokedex.util.ImageHelper
 import java.net.URLEncoder
 
 @ExperimentalFoundationApi
@@ -110,7 +111,7 @@ fun PokemonItem(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Image(url = pokemon.imageUrl, averageColor = { backgroundColor = it })
+        Image(url = ImageHelper.pokemonImageUrl(pokemon.url), averageColor = { backgroundColor = it })
         Text(
             text = pokemon.name,
             fontSize = 16.sp,
