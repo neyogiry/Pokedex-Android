@@ -1,46 +1,68 @@
 package com.neyogiry.android.sample.pokedex.ui.detail
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.layoutId
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
-import com.neyogiry.android.sample.pokedex.R
+import androidx.constraintlayout.compose.Dimension
+import androidx.navigation.NavController
+import com.neyogiry.android.sample.pokedex.domain.PokemonDetail
+import com.neyogiry.android.sample.pokedex.util.Image
+import com.neyogiry.android.sample.pokedex.util.ImageHelper
 
 @Composable
-fun PokemonDetails() {
-    Column {
+fun PokemonDetails(
+    navController: NavController,
+    url: String,
+    viewModel: PokemonDetailViewModel = viewModel(factory = PokemonDetailViewModel.provideFactory(url))
+) {
+    val viewState by viewModel.state.collectAsState()
+    viewState.pokemon?.let { pokemon ->
+        PokemonDetailContent(navController = navController, pokemon = pokemon, url = url)
+    }
+}
+
+@Composable
+private fun PokemonDetailContent(
+    navController: NavController,
+    pokemon: PokemonDetail,
+    url: String,
+) {
+    Scaffold {
         val headerLayoutId = "header"
         val imageLayoutId = "image"
         val detailsLayoutId = "details"
         val constraints = constraints(headerLayoutId, imageLayoutId, detailsLayoutId)
 
-        ConstraintLayout(constraintSet = constraints) {
-            Header(headerLayoutId)
-            Details(detailsLayoutId)
-            PokemonImage(imageLayoutId)
+        ConstraintLayout(constraintSet = constraints, modifier = Modifier.fillMaxSize()) {
+            Header(navController = navController, layoutId = headerLayoutId)
+            Details(pokemon = pokemon, layoutId = detailsLayoutId)
+            PokemonImage(imageUrl = ImageHelper.pokemonImageUrl(url), layoutId = imageLayoutId)
         }
     }
 }
 
 @Composable
-fun Header(layoutId: String = "") {
+fun Header(
+    navController: NavController,
+    layoutId: String
+) {
     Box(
         modifier = Modifier
-            .height(200.dp)
+            .height(270.dp)
             .fillMaxWidth()
             .background(color = Color.Cyan)
             .layoutId(layoutId)
@@ -48,57 +70,96 @@ fun Header(layoutId: String = "") {
 }
 
 @Composable
-fun PokemonImage(layoutId: String = "") {
+fun PokemonImage(
+    imageUrl: String,
+    layoutId: String,
+) {
     Image(
-        painter = painterResource(id = R.drawable.ic_launcher_foreground),
-        contentDescription = "",
+        url = imageUrl,
         modifier = Modifier
-            .background(color = Color.Green)
+            .fillMaxWidth()
+            .wrapContentHeight()
             .layoutId(layoutId)
     )
 }
 
 @Composable
-fun Details(layoutId: String = "") {
-    Card(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                color = Color.White,
-                shape = RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp)
-            )
-            .padding(12.dp)
-            .layoutId(layoutId)
+fun Details(
+    pokemon: PokemonDetail,
+    layoutId: String,
+) {
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .background(
+            color = Color.White,
+            shape = RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp)
+        )
+        .layoutId(layoutId),
     ) {
         Column(
             modifier = Modifier
-                .padding(top = 48.dp, start = 24.dp, end = 14.dp, bottom = 24.dp),
+                .wrapContentSize()
+                .padding(top = 60.dp, start = 24.dp, end = 14.dp, bottom = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ){
             Text(
-                text = "Pokemon",
+                text = pokemon.name,
                 fontSize = 24.sp,
                 modifier = Modifier
-                    .wrapContentHeight()
+                    .wrapContentSize()
             )
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            LazyRow {
-                items(1) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+            ) {
+                //Weight
+                Column(
+                    modifier = Modifier
+                        .weight(1f),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
                     Text(
-                        text = "Water",
+                        text = String.format("%.1f Kg", pokemon.weight/10f),
+                        fontSize = 24.sp,
                         modifier = Modifier
                             .wrapContentHeight()
-                            .background(color = Color.Cyan)
-                            .padding(4.dp)
+                    )
+                    Text(
+                        text = "Weight",
+                        fontSize = 16.sp,
+                        modifier = Modifier
+                            .wrapContentHeight()
+                    )
+                }
+
+                //Height
+                Column(
+                    modifier = Modifier
+                        .weight(1f),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = String.format("%.1f m", pokemon.height/10f),
+                        fontSize = 24.sp,
+                        modifier = Modifier
+                            .wrapContentHeight()
+                    )
+                    Text(
+                        text = "Height",
+                        fontSize = 16.sp,
+                        modifier = Modifier
+                            .wrapContentHeight()
                     )
                 }
             }
 
         }
-
     }
+
 }
 
 private fun constraints(
@@ -117,22 +178,19 @@ private fun constraints(
             end.linkTo(parent.end)
         }
 
-        constrain(image) {
-            bottom.linkTo(details.top, margin = (-30).dp)
-            centerHorizontallyTo(details)
-        }
-
         constrain(details) {
             top.linkTo(header.bottom, margin = -40.dp)
             start.linkTo(parent.start)
             end.linkTo(parent.end)
         }
 
-    }
-}
+        constrain(image) {
+            linkTo(start = parent.start, top = parent.top, end = parent.end, bottom = details.top, topMargin = 12.dp, bottomMargin = (-100).dp, verticalBias = 0f)
+            width = Dimension.percent(.6f)
+            height = Dimension.fillToConstraints
 
-@Preview(showSystemUi = true, showBackground = true)
-@Composable
-fun PokemonDetailsPreview() {
-    PokemonDetails()
+            centerHorizontallyTo(details)
+        }
+
+    }
 }

@@ -2,6 +2,7 @@ package com.neyogiry.android.sample.pokedex.util
 
 import android.graphics.Bitmap
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
@@ -14,6 +15,8 @@ import coil.memory.MemoryCache
 @Composable
 fun Image(
     url: String,
+    modifier: Modifier = Modifier,
+    contentDescription: String? = null,
     averageColor: ((Color) -> Unit)? = null,
 ){
     val context = LocalContext.current
@@ -29,8 +32,9 @@ fun Image(
 
     AsyncImage(
         model = url,
-        contentDescription = null,
+        contentDescription = contentDescription,
         imageLoader = imageLoader,
+        modifier = modifier,
         onSuccess = {
         val bitmap = it.result.drawable.toBitmap()
         averageColor?.let { averageColor ->
