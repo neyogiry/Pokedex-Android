@@ -8,10 +8,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -53,10 +50,11 @@ private fun PokemonDetailContent(
         val detailsLayoutId = "details"
         val constraints = constraints(headerLayoutId, imageLayoutId, detailsLayoutId)
 
+        var headerBackgroundColor by remember { mutableStateOf(Color.White) }
         ConstraintLayout(constraintSet = constraints, modifier = Modifier.fillMaxSize()) {
-            Header(navController = navController, layoutId = headerLayoutId)
+            Header(navController = navController, layoutId = headerLayoutId, backgroundColor = headerBackgroundColor)
             Details(pokemon = pokemon, layoutId = detailsLayoutId)
-            PokemonImage(imageUrl = ImageHelper.pokemonImageUrl(url), layoutId = imageLayoutId)
+            PokemonImage(imageUrl = ImageHelper.pokemonImageUrl(url), layoutId = imageLayoutId, headerBackgroundColor = { headerBackgroundColor = it })
         }
     }
 }
@@ -64,13 +62,14 @@ private fun PokemonDetailContent(
 @Composable
 fun Header(
     navController: NavController,
+    backgroundColor: Color,
     layoutId: String
 ) {
     Box(
         modifier = Modifier
             .height(270.dp)
             .fillMaxWidth()
-            .background(color = Color.Cyan)
+            .background(color = backgroundColor)
             .layoutId(layoutId)
     ) {
         Icon(
@@ -87,13 +86,15 @@ fun Header(
 fun PokemonImage(
     imageUrl: String,
     layoutId: String,
+    headerBackgroundColor: (Color) -> Unit,
 ) {
     Image(
         url = imageUrl,
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
-            .layoutId(layoutId)
+            .layoutId(layoutId),
+        averageColor = { headerBackgroundColor(it) }
     )
 }
 
