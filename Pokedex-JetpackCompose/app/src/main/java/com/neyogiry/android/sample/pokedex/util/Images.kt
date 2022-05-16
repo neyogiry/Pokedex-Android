@@ -36,8 +36,8 @@ fun Image(
         imageLoader = imageLoader,
         modifier = modifier,
         onSuccess = {
-        val bitmap = it.result.drawable.toBitmap()
         averageColor?.let { averageColor ->
+            val bitmap = it.result.drawable.toBitmap()
             bitmap.averageColor { color ->
                 averageColor(color)
             }

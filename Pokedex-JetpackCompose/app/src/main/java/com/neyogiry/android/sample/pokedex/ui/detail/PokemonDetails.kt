@@ -21,20 +21,46 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.neyogiry.android.sample.pokedex.R
+import com.neyogiry.android.sample.pokedex.domain.Pokemon
 import com.neyogiry.android.sample.pokedex.domain.PokemonDetail
+import com.neyogiry.android.sample.pokedex.ui.theme.Pokedex
 import com.neyogiry.android.sample.pokedex.util.Image
 import com.neyogiry.android.sample.pokedex.util.ImageHelper
 
 @Composable
 fun PokemonDetails(
     navController: NavController,
-    url: String,
-    viewModel: PokemonDetailViewModel = viewModel(factory = PokemonDetailViewModel.provideFactory(url))
+    pokemon: Pokemon,
+    viewModel: PokemonDetailViewModel = viewModel(factory = PokemonDetailViewModel.provideFactory(pokemon.url))
 ) {
     val viewState by viewModel.state.collectAsState()
-    viewState.pokemon?.let { pokemon ->
-        PokemonDetailContent(navController = navController, pokemon = pokemon, url = url)
+    val systemUiController = rememberSystemUiController()
+    systemUiController.setStatusBarColor(pokemon.averageColor ?: Pokedex)
+    viewState.pokemon?.let { pokemonDetail ->
+        PokemonDetailContent(navController = navController, pokemon = pokemonDetail, pokemonColor = pokemon.averageColor ?: Pokedex, url = pokemon.url)
+    }
+}
+
+@Composable
+private fun PokemonDetailContent(
+    navController: NavController,
+    pokemon: PokemonDetail,
+    pokemonColor: Color,
+    url: String,
+) {
+    Scaffold {
+        val headerLayoutId = "header"
+        val imageLayoutId = "image"
+        val detailsLayoutId = "details"
+        val constraints = constraints(headerLayoutId, imageLayoutId, detailsLayoutId)
+
+        ConstraintLayout(constraintSet = constraints, modifier = Modifier.fillMaxSize()) {
+            Header(navController = navController, layoutId = headerLayoutId, backgroundColor = pokemonColor)
+            Details(pokemon = pokemon, layoutId = detailsLayoutId)
+            PokemonImage(imageUrl = ImageHelper.pokemonImageUrl(url), layoutId = imageLayoutId)
+        }
     }
 }
 
@@ -80,6 +106,20 @@ fun Header(
         )
 
     }
+}
+
+@Composable
+fun PokemonImage(
+    imageUrl: String,
+    layoutId: String,
+) {
+    Image(
+        url = imageUrl,
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight()
+            .layoutId(layoutId),
+    )
 }
 
 @Composable
