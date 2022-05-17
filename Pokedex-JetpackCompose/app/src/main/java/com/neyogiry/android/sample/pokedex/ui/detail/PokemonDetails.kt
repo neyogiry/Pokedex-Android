@@ -20,7 +20,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.Dimension
-import androidx.navigation.NavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.neyogiry.android.sample.pokedex.R
 import com.neyogiry.android.sample.pokedex.domain.Pokemon
@@ -31,24 +30,24 @@ import com.neyogiry.android.sample.pokedex.util.ImageHelper
 
 @Composable
 fun PokemonDetails(
-    navController: NavController,
     pokemon: Pokemon,
-    viewModel: PokemonDetailViewModel = viewModel(factory = PokemonDetailViewModel.provideFactory(pokemon.url))
+    viewModel: PokemonDetailViewModel = viewModel(factory = PokemonDetailViewModel.provideFactory(pokemon.url)),
+    onBackPressed: () -> Unit,
 ) {
     val viewState by viewModel.state.collectAsState()
     val systemUiController = rememberSystemUiController()
     systemUiController.setStatusBarColor(pokemon.averageColor ?: Pokedex)
     viewState.pokemon?.let { pokemonDetail ->
-        PokemonDetailContent(navController = navController, pokemon = pokemonDetail, pokemonColor = pokemon.averageColor ?: Pokedex, url = pokemon.url)
+        PokemonDetailContent(pokemon = pokemonDetail, pokemonColor = pokemon.averageColor ?: Pokedex, url = pokemon.url, onBackPressed = onBackPressed)
     }
 }
 
 @Composable
 private fun PokemonDetailContent(
-    navController: NavController,
     pokemon: PokemonDetail,
     pokemonColor: Color,
     url: String,
+    onBackPressed: () -> Unit,
 ) {
     Scaffold {
         val headerLayoutId = "header"
@@ -57,7 +56,7 @@ private fun PokemonDetailContent(
         val constraints = constraints(headerLayoutId, imageLayoutId, detailsLayoutId)
 
         ConstraintLayout(constraintSet = constraints, modifier = Modifier.fillMaxSize()) {
-            Header(navController = navController, layoutId = headerLayoutId, backgroundColor = pokemonColor)
+            Header(layoutId = headerLayoutId, backgroundColor = pokemonColor, onBackPressed = onBackPressed)
             Details(pokemon = pokemon, layoutId = detailsLayoutId)
             PokemonImage(imageUrl = ImageHelper.pokemonImageUrl(url), layoutId = imageLayoutId)
         }
@@ -65,31 +64,10 @@ private fun PokemonDetailContent(
 }
 
 @Composable
-private fun PokemonDetailContent(
-    navController: NavController,
-    pokemon: PokemonDetail,
-    url: String,
-) {
-    Scaffold {
-        val headerLayoutId = "header"
-        val imageLayoutId = "image"
-        val detailsLayoutId = "details"
-        val constraints = constraints(headerLayoutId, imageLayoutId, detailsLayoutId)
-
-        var headerBackgroundColor by remember { mutableStateOf(Color.White) }
-        ConstraintLayout(constraintSet = constraints, modifier = Modifier.fillMaxSize()) {
-            Header(navController = navController, layoutId = headerLayoutId, backgroundColor = headerBackgroundColor)
-            Details(pokemon = pokemon, layoutId = detailsLayoutId)
-            PokemonImage(imageUrl = ImageHelper.pokemonImageUrl(url), layoutId = imageLayoutId, headerBackgroundColor = { headerBackgroundColor = it })
-        }
-    }
-}
-
-@Composable
 fun Header(
-    navController: NavController,
     backgroundColor: Color,
-    layoutId: String
+    layoutId: String,
+    onBackPressed: () -> Unit,
 ) {
     Box(
         modifier = Modifier
@@ -101,7 +79,7 @@ fun Header(
         Icon(
             painter = painterResource(id = R.drawable.ic_expand_more),
             contentDescription = null,
-            modifier = Modifier.clickable(interactionSource = remember { MutableInteractionSource() }, indication = null) { navController.popBackStack() },
+            modifier = Modifier.clickable(interactionSource = remember { MutableInteractionSource() }, indication = null) { onBackPressed() },
             tint = Color.White
         )
 

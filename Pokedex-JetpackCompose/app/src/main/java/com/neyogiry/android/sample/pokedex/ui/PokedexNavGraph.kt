@@ -1,5 +1,6 @@
 package com.neyogiry.android.sample.pokedex.ui
 
+import android.net.Uri
 import android.os.Bundle
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.runtime.Composable
@@ -25,13 +26,20 @@ fun PokedexNavGraph(
         startDestination = PokedexDestinations.HOME_ROUTE,
     ) {
         composable(PokedexDestinations.HOME_ROUTE) {
-            Home(navController)
+            Home() { pokemon ->
+                val json = Uri.encode(Gson().toJson(pokemon))
+                navController.navigate(PokedexDestinations.DETAILS_ROUTE + json)
+            }
         }
         composable(
             route = "${PokedexDestinations.DETAILS_ROUTE}{pokemon}",
             arguments = listOf(navArgument("pokemon") { type = PokemonType() })
         ) { backStackEntry ->
-            backStackEntry.arguments?.getParcelable<Pokemon>("pokemon")?.let { pokemon -> PokemonDetails(navController = navController, pokemon = pokemon) }
+            backStackEntry.arguments?.getParcelable<Pokemon>("pokemon")?.let { pokemon ->
+                PokemonDetails(pokemon = pokemon) {
+                    navController.popBackStack()
+                }
+            }
         }
     }
 
