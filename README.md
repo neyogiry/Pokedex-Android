@@ -8,6 +8,10 @@
   This repository contains a set of individual Android Studio projects to help you learn about native Android development. 
 Each sample demonstrates different use cases, complexity levels and APIs.
 
+<p align="center">
+<img src="/readme/pokedex_main.png" width="320"/>
+</p>
+
 ## Samples
 Different ways of developing the same application. You can look at the different samples.
 
