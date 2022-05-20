@@ -4,6 +4,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.neyogiry.android.sample.pokedex.data.RemoteDataSource
+import com.neyogiry.android.sample.pokedex.data.Result
 import com.neyogiry.android.sample.pokedex.domain.PokedexRepository
 import com.neyogiry.android.sample.pokedex.domain.Pokemon
 import kotlinx.coroutines.Dispatchers
@@ -21,21 +22,37 @@ class HomeViewModel(
         get() = _state
 
     init {
+        fetchPokedex()
+    }
+
+    private fun fetchPokedex() {
         viewModelScope.launch {
-            repository.pokedex.flowOn(Dispatchers.IO).collect {
-                _state.value = HomeViewState(pokemonList = it.toMutableList())
-            }
+            repository.pokedex
+                .flowOn(Dispatchers.IO)
+                .catch {
+                    _state.update { it.copy(showError = true) }
+                }
+                .collect { result ->
+                    when (result) {
+                        is Result.Success -> _state.update { it.copy(pokemonList = result.data, showError = false) }
+                        is Result.Error -> _state.update { it.copy(showError = true) }
+                    }
+
+                }
         }
+    }
+
+    fun retry() {
+        fetchPokedex()
     }
 
     fun savePokemonColor(position: Int, color: Color) {
         _state.value.pokemonList[position].averageColor = color
-
     }
 
 }
 
 data class HomeViewState(
     val pokemonList: List<Pokemon> = emptyList(),
-    val errorMessage: String? = null,
+    val showError: Boolean = false,
 )

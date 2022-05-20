@@ -10,7 +10,7 @@ class RemoteDataSource(
     private val apiService: ApiService = ApiClient.getApiService()
 ) : DataSource {
 
-    override val pokedex: Flow<List<Pokemon>>
+    override val pokedex: Flow<Result<List<Pokemon>>>
         get() = flow {
             val response = apiService.pokemonList()
             if(response.isSuccessful) {
@@ -21,26 +21,27 @@ class RemoteDataSource(
                         Pokemon(item.name ?: "", item.url ?: "")
                     )
                 }
-                emit(list)
+                emit(Result.Success(list))
             } else {
-                //TODO: Manage error responses
+                emit(Result.Error(Exception()))
             }
 
         }
 
-    override fun fetchPokemonDetailByUrl(url: String): Flow<PokemonDetail> {
+    override fun fetchPokemonDetailByUrl(url: String): Flow<Result<PokemonDetail>> {
         return flow {
             val response = apiService.pokemonDetailByUrl(url)
             if (response.isSuccessful) {
                 val pokemonResponse = response.body()
                 pokemonResponse?.let { pokemon ->
                     emit(
-                        PokemonDetail(name = pokemon.name ?: "", height = pokemon.height ?: 0, weight = pokemon.weight ?: 0)
+                        Result.Success(PokemonDetail(name = pokemon.name ?: "", height = pokemon.height ?: 0, weight = pokemon.weight ?: 0))
                     )
+                } ?: kotlin.run {
+                    emit(Result.Error(Exception()))
                 }
-                //TODO: Manage error responses
             } else {
-                //TODO: Manage error responses
+                emit(Result.Error(Exception()))
             }
         }
     }

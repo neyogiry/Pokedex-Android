@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.neyogiry.android.sample.pokedex.domain.Pokemon
+import com.neyogiry.android.sample.pokedex.ui.ErrorScreen
 import com.neyogiry.android.sample.pokedex.ui.theme.Pokedex
 import com.neyogiry.android.sample.pokedex.util.Image
 import com.neyogiry.android.sample.pokedex.util.ImageHelper
@@ -31,11 +32,15 @@ fun Home(
     onItemClick: (Pokemon) -> Unit,
 ) {
     val viewState by viewModel.state.collectAsState()
-    HomeContent(
-        viewModel = viewModel,
-        list = viewState.pokemonList,
-        onItemClick = onItemClick,
-    )
+    if (viewState.showError) {
+        ErrorScreen(onRetry = { viewModel.retry() })
+    } else {
+        HomeContent(
+            viewModel = viewModel,
+            list = viewState.pokemonList,
+            onItemClick = onItemClick,
+        )
+    }
 
 }
 

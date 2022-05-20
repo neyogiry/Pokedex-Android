@@ -24,6 +24,7 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.neyogiry.android.sample.pokedex.R
 import com.neyogiry.android.sample.pokedex.domain.Pokemon
 import com.neyogiry.android.sample.pokedex.domain.PokemonDetail
+import com.neyogiry.android.sample.pokedex.ui.ErrorScreen
 import com.neyogiry.android.sample.pokedex.ui.theme.Pokedex
 import com.neyogiry.android.sample.pokedex.util.Image
 import com.neyogiry.android.sample.pokedex.util.ImageHelper
@@ -37,8 +38,12 @@ fun PokemonDetails(
     val viewState by viewModel.state.collectAsState()
     val systemUiController = rememberSystemUiController()
     systemUiController.setStatusBarColor(pokemon.averageColor ?: Pokedex)
-    viewState.pokemon?.let { pokemonDetail ->
-        PokemonDetailContent(pokemon = pokemonDetail, pokemonColor = pokemon.averageColor ?: Pokedex, url = pokemon.url, onBackPressed = onBackPressed)
+    if (viewState.showError) {
+        ErrorScreen(onRetry = { viewModel.retry() })
+    } else {
+        viewState.pokemon?.let { pokemonDetail ->
+            PokemonDetailContent(pokemon = pokemonDetail, pokemonColor = pokemon.averageColor ?: Pokedex, url = pokemon.url, onBackPressed = onBackPressed)
+        }
     }
 }
 

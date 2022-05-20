@@ -4,12 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.neyogiry.android.sample.pokedex.data.RemoteDataSource
+import com.neyogiry.android.sample.pokedex.data.Result
 import com.neyogiry.android.sample.pokedex.domain.PokedexRepository
 import com.neyogiry.android.sample.pokedex.domain.PokemonDetail
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 class PokemonDetailViewModel(
@@ -24,11 +23,27 @@ class PokemonDetailViewModel(
         get() = _state
 
     init {
+        fetchPokemonDetails()
+    }
+
+    private fun fetchPokemonDetails() {
         viewModelScope.launch {
-            repository.pokemonDetail(url).flowOn(Dispatchers.IO).collect {
-                _state.value = PokemonDetailViewState(pokemon = it)
-            }
+            repository.pokemonDetail(url)
+                .flowOn(Dispatchers.IO)
+                .catch {
+                    _state.update { it.copy(pokemon = null, showError = true) }
+                }
+                .collect { result ->
+                    when (result) {
+                        is Result.Success -> _state.update { it.copy(pokemon = result.data, showError = false) }
+                        is Result.Error -> _state.update { it.copy(pokemon = null, showError = true) }
+                    }
+                }
         }
+    }
+
+    fun retry() {
+        fetchPokemonDetails()
     }
 
     /**
@@ -49,5 +64,5 @@ class PokemonDetailViewModel(
 
 data class PokemonDetailViewState(
     val pokemon: PokemonDetail? = null,
-    val errorMessage: String? = null,
+    val showError: Boolean = false,
 )
