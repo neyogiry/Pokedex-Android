@@ -21,6 +21,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.neyogiry.android.sample.pokedex.domain.Pokemon
 import com.neyogiry.android.sample.pokedex.ui.ErrorScreen
+import com.neyogiry.android.sample.pokedex.ui.LoadingScreen
 import com.neyogiry.android.sample.pokedex.ui.theme.Pokedex
 import com.neyogiry.android.sample.pokedex.util.Image
 import com.neyogiry.android.sample.pokedex.util.ImageHelper
@@ -32,6 +33,7 @@ fun Home(
     onItemClick: (Pokemon) -> Unit,
 ) {
     val viewState by viewModel.state.collectAsState()
+    LoadingScreen(isLoading = viewState.loading)
     if (viewState.showError) {
         ErrorScreen(onRetry = { viewModel.retry() })
     } else {
@@ -51,14 +53,16 @@ fun HomeContent(
     list: List<Pokemon>,
     onItemClick: (Pokemon) -> Unit,
 ) {
-    Scaffold(
-        topBar = { PokedexAppBar() },
-    ) {
-        PokemonList(
-            viewModel = viewModel,
-            list = list,
-            onItemClick = onItemClick
-        )
+    if (list.isNotEmpty()) {
+        Scaffold(
+            topBar = { PokedexAppBar() },
+        ) {
+            PokemonList(
+                viewModel = viewModel,
+                list = list,
+                onItemClick = onItemClick
+            )
+        }
     }
 }
 

@@ -26,16 +26,17 @@ class HomeViewModel(
     }
 
     private fun fetchPokedex() {
+        _state.update { it.copy(loading = true) }
         viewModelScope.launch {
             repository.pokedex
                 .flowOn(Dispatchers.IO)
                 .catch {
-                    _state.update { it.copy(showError = true) }
+                    _state.update { it.copy(showError = true, loading = false) }
                 }
                 .collect { result ->
                     when (result) {
-                        is Result.Success -> _state.update { it.copy(pokemonList = result.data, showError = false) }
-                        is Result.Error -> _state.update { it.copy(showError = true) }
+                        is Result.Success -> _state.update { it.copy(pokemonList = result.data, showError = false, loading = false) }
+                        is Result.Error -> _state.update { it.copy(showError = true, loading = false) }
                     }
 
                 }
@@ -55,4 +56,5 @@ class HomeViewModel(
 data class HomeViewState(
     val pokemonList: List<Pokemon> = emptyList(),
     val showError: Boolean = false,
+    val loading: Boolean = false,
 )

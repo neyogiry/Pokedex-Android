@@ -27,16 +27,17 @@ class PokemonDetailViewModel(
     }
 
     private fun fetchPokemonDetails() {
+        _state.update { it.copy(loading = true) }
         viewModelScope.launch {
             repository.pokemonDetail(url)
                 .flowOn(Dispatchers.IO)
                 .catch {
-                    _state.update { it.copy(pokemon = null, showError = true) }
+                    _state.update { it.copy(pokemon = null, showError = true, loading = false) }
                 }
                 .collect { result ->
                     when (result) {
-                        is Result.Success -> _state.update { it.copy(pokemon = result.data, showError = false) }
-                        is Result.Error -> _state.update { it.copy(pokemon = null, showError = true) }
+                        is Result.Success -> _state.update { it.copy(pokemon = result.data, showError = false, loading = false) }
+                        is Result.Error -> _state.update { it.copy(pokemon = null, showError = true, loading = false) }
                     }
                 }
         }
@@ -65,4 +66,5 @@ class PokemonDetailViewModel(
 data class PokemonDetailViewState(
     val pokemon: PokemonDetail? = null,
     val showError: Boolean = false,
+    val loading: Boolean = false,
 )
