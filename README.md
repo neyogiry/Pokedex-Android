@@ -20,6 +20,9 @@ Different ways of developing the same application. You can look at the different
 ### Status: 🚧 In progress
 Pokedex is still in under development, and some features are not yet implemented.
 
+## Tech stack
+- Kotlin
+
 ## API
 <img src="https://user-images.githubusercontent.com/24237865/83422649-d1b1d980-a464-11ea-8c91-a24fdf89cd6b.png" align="right" width="21%"/>
 
