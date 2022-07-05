@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
@@ -93,6 +94,7 @@ fun PokemonList(
 ) {
     LazyVerticalGrid(
         cells = GridCells.Fixed(2),
+        state = rememberLazyListState(),
         contentPadding = PaddingValues(all = 10.dp)
     ) {
         itemsIndexed(list) { index, item ->
@@ -130,7 +132,8 @@ fun PokemonItemContent(
     Column(
         modifier = Modifier
             .clickable { onClick() }
-            .fillMaxSize()
+            .fillMaxWidth()
+            .aspectRatio(1f)
             .padding(4.dp)
             .border(width = 1.dp, color = Color.Gray, shape = shape)
             .background(color = backgroundColor, shape = shape)
@@ -155,7 +158,8 @@ fun PokemonItemContent(
     Column(
         modifier = Modifier
             .clickable { onClick() }
-            .fillMaxSize()
+            .fillMaxWidth()
+            .aspectRatio(1f)
             .padding(4.dp)
             .border(width = 1.dp, color = Color.Gray, shape = shape)
             .background(color = pokemon.averageColor ?: Color.Transparent, shape = shape)
